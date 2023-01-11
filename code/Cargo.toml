@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 gauss-quad = "0.1.5"
+ndarray = "0.14"
+ndarray-linalg = { version = "0.13", features = ["openblas-static"] }
+poloto = "17.1.0"

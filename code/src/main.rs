@@ -1,7 +1,8 @@
 use gauss_quad::GaussLegendre;
 use ndarray::prelude::*;
 use ndarray_linalg::Solve;
-use poloto::build;
+use egui::plot::{Line, Plot, PlotPoints};
+use eframe::egui;
 // CONSTANTS
 const N: usize = 9;
 
@@ -46,16 +47,41 @@ fn x_i(i: f64) -> f64 {
     2.0*(i as f64)/(N as f64)
 }
 
-fn plot(x: Vec<f64>, y: Vec<f64>){
-    let plots = poloto::plots!(
-       build::plot("u(x)").line((0..x.len()).map(|i| [x[i], y[i]]))
-    );
 
-    poloto::data(poloto::plots!(build::origin(), plots))
-        .build_and_label(("Równanie transportu ciepła", "x", "y"))
-        .append_to(poloto::header().dark_theme())
-        .render_stdout();
+struct App {}
+
+impl eframe::App for App {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.heading("TEST")
+        });
+    }
 }
+
+
+
+fn plot(x: Vec<f64>, y: Vec<f64>){
+    let curve: PlotPoints = (0..x.len()).map(|i| {
+        [x[i], y[i]]
+    }).collect();
+
+    let line = Line::new(curve);
+
+    let app = App {};
+
+    let options = eframe::NativeOptions {
+        initial_window_size: Some(egui::vec2(320.0, 240.0)),
+        ..Default::default()
+    };
+
+    eframe::run_native(
+        "My egui app",
+        options,
+        Box::new(|_cc| Box::new(app))
+    )
+
+}
+
 
 fn main() {
     let mut a: Array2<f64> = Array2::<f64>::zeros((N+1, N+1)); 

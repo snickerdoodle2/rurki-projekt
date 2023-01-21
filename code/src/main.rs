@@ -1,20 +1,26 @@
+// IMPORTS
 use gauss_quad::GaussLegendre;
 use ndarray::prelude::*;
 use ndarray_linalg::Solve;
 use egui::plot::{Line, Plot, PlotPoints};
 use eframe::egui;
-// CONSTANTS
-const N: usize = 9;
 
+// CONSTANTS
+const N: usize = 9; // ilość kroków
+
+
+// funkcja zwraca i-te B
 fn b(u_d: impl Fn(f64) -> f64, v_d: impl Fn(f64) -> f64, u: impl Fn(f64) -> f64, v: impl Fn(f64) -> f64, a: f64, b: f64) -> f64 {
     let quad: GaussLegendre = GaussLegendre::init(4);
     quad.integrate(a, b, |x| u_d(x)*v_d(x)) - u(0.)*v(0.)
 }
 
+// funkcja zwraca i-te L
 fn l(v: impl Fn(f64) -> f64) -> f64 {
 	-20.0*v(0.0)
 }
 
+// funkcja zwraca u_i
 fn u_i(i_: usize) -> impl Fn(f64) -> f64{
     let n: f64 = N as f64;
     let i = i_ as f64;
@@ -29,6 +35,8 @@ fn u_i(i_: usize) -> impl Fn(f64) -> f64{
     }
 }
 
+
+// funkcja zwraca (u_i)'
 fn ud_i(i_: usize) -> impl Fn(f64) -> f64 {
     let n = N as f64;
     let i = i_ as f64;
@@ -43,49 +51,77 @@ fn ud_i(i_: usize) -> impl Fn(f64) -> f64 {
     }
 }
 
+// funkcja zwraca i-tego x
 fn x_i(i: f64) -> f64 {
     2.0*(i as f64)/(N as f64)
 }
 
 
-struct App {}
+// DO WYKRESU
+struct App {
+   x: Vec<f64>,
+   y: Vec<f64>
+}
+
+impl Default for App {
+    fn default() -> Self {
+        let mut x: Vec<f64> = Vec::new();
+        let mut y: Vec<f64> = Vec::new();
+        (0..1000).for_each(|i| {
+             x.push(i as f64 * 0.01);
+             y.push((i as f64 * 0.01).sin());
+        });
+
+
+        Self {
+            x,
+            y
+        }
+    }
+}
 
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("TEST")
-        });
+                let points: PlotPoints = (0..self.x.len()).map(|i| {
+                    [self.x[i], self.y[i]]
+                }).collect();
+                let line = Line::new(points);
+                Plot::new("my_plot").view_aspect(2.0).show(ui, |plot_ui| plot_ui.line(line));
+       });
     }
 }
 
 
 
 fn plot(x: Vec<f64>, y: Vec<f64>){
-    let curve: PlotPoints = (0..x.len()).map(|i| {
-        [x[i], y[i]]
-    }).collect();
-
-    let line = Line::new(curve);
-
-    let app = App {};
-
     let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(320.0, 240.0)),
+//        initial_window_size: Some(egui::vec2(600.0, 600.0)),
         ..Default::default()
     };
 
+    let app = App {
+        x: x.clone(),
+        y: y.clone()
+    };
+
+
     eframe::run_native(
-        "My egui app",
+        "Wykres",
         options,
         Box::new(|_cc| Box::new(app))
     )
 
 }
 
+// KONIEC DO WYKRESU
 
 fn main() {
+	// Macierz wypełniona zerami
     let mut a: Array2<f64> = Array2::<f64>::zeros((N+1, N+1)); 
+
     let n = N as f64;
+	// Wypełniamy macierz zgodnie z przykładem na zajęciach
     for i in 0..N {
         for j in 0..=N {
             let s: f64;
@@ -106,7 +142,7 @@ fn main() {
 
     a[[N, N]] = 1.;
 
-
+	// Macierz B
     let mut b: Array1<f64> = Array1::<f64>::zeros(N+1);
 
     for i in 0..N {
@@ -114,8 +150,10 @@ fn main() {
     }
     b[N] = 0.;
 
+	// Rozwiązujemy układ macierzy
     let res = a.solve_into(b).unwrap();
     
+	// tworzymy punkty
     let x: Vec<f64> = (0..=2000).map(|x| x as f64*0.001).collect::<Vec<f64>>();
     let mut y = vec![0f64; x.len()];
 
@@ -126,6 +164,7 @@ fn main() {
         }
     }
 
+	// rysujemy wykres
     plot(x, y);
 
 }

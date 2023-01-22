@@ -189,11 +189,11 @@ fn main() {
         }
     }
 
-	print_2d(a);
+//	print_2d(a);
 
-	print_1d(b);
+//	print_1d(b);
 
-	print_1d(res);
+//	print_1d(res);
 
 	// rysujemy wykres
     plot(x, y);

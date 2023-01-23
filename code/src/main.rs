@@ -1,4 +1,6 @@
-use std::fmt::Display;
+const N: usize = 10; // ilość kroków
+
+
 
 // CAŁKI
 use gauss_quad::GaussLegendre;
@@ -10,10 +12,6 @@ use ndarray_linalg::Solve;
 // WYKRES
 use egui::plot::{Line, Plot, PlotPoints};
 use eframe::egui;
-
-// CONSTANTS
-const N: usize = 6; // ilość kroków
-
 
 fn get_a(u_d: impl Fn(f64) -> f64, v_d: impl Fn(f64) -> f64,
 	u: impl Fn(f64) -> f64, v: impl Fn(f64) -> f64,
@@ -122,18 +120,21 @@ fn plot(x: Vec<f64>, y: Vec<f64>){
     )
 
 }
-fn print_2d<T: Display>(t: Array2<T>) {
+fn print_matrix(t: Array2<f64>, b: Array1<f64>) {
+	let mut row_index = 0;
 	for row in t.genrows() {
 		for i in row.iter() {
-			print!("{:.1}\t", i);
+			print!("{:5.1}\t", i);
 		}
+		print!("\t{:5.1}", b[row_index]);
+		row_index += 1;
 		println!("");
 	}
 }
 
-fn print_1d<T: Display>(t: Array1<T>) {
+fn print_1d(t: Array1<f64>) {
 	for i in t.iter() {
-		println!("{:.1}\t", i);
+		println!("{:5.1}", i);
 	}
 }
 
@@ -189,11 +190,12 @@ fn main() {
         }
     }
 
-//	print_2d(a);
-
-//	print_1d(b);
-
-//	print_1d(res);
+	println!();
+	print_matrix(a, b);
+	println!();
+	println!();
+	print_1d(res);
+	println!();
 
 	// rysujemy wykres
     plot(x, y);

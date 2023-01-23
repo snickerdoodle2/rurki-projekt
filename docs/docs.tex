@@ -10,6 +10,10 @@
 \usepackage[T1]{fontenc}
 \lstset{basicstyle=\ttfamily}
 
+\usepackage{graphicx}
+
+\graphicspath{ {assets/} }
+
 \begin{document}
 \begin{titlepage}
 	\begin{center}
@@ -37,6 +41,7 @@
 			 
 	\end{center}
 \end{titlepage}
+
 
 \section{Wprowadzenie}
 Celem projektu było rozwiązanie równania różniczkowego, podanego przez prowadzącego, metodą
@@ -119,8 +124,11 @@ on bezpieczeństwo, wydajność i elastyczność.
  odpowiedzialnymi za: wyliczanie całek, rozwiązanie układu macierzy oraz za
  stworzenie wykresu.
 
+\noindent Całkowanie odbywa się za pomocą metody Gaussa-Legendre'a z czterema punktami kwadratury.
 
-\subsection[short]{Funkcje pomocnicze}
+\noindent Całość kodu znajduje się w repozytorium na Githubie (podanym w komentarzu do zadania).
+
+\subsection{Funkcje pomocnicze}
 Zadeklarowałem parę pomocniczych funkcji, które po krótce opiszę.
 
 
@@ -147,9 +155,6 @@ fn get_l(v: impl Fn(f64) -> f64) -> f64 {
 }
 \end{lstlisting}
 \centerline{\textbf{get\_l} - zwraca $L(v)$}
-\vskip 1cm
-
-\newpage
 
 \begin{lstlisting}[language=Rust, style=boxed]
 fn u_i(i_: usize) -> impl Fn(f64) -> f64{
@@ -187,8 +192,6 @@ fn ud_i(i_: usize) -> impl Fn(f64) -> f64 {
 \centerline{\textbf{ud\_i} - zwraca $u'_i(x)$}
 \vskip 1cm
 
-\newpage
-
 \begin{lstlisting}[language=Rust, style=boxed]
 fn x_i(i: f64) -> f64 {
 	2.0*(i as f64)/(N as f64)
@@ -200,9 +203,8 @@ fn x_i(i: f64) -> f64 {
 \noindent Ponadto, znajdują się funkcję tworzące wykres, w które szczegóły nie
  będę się zagłębiał.
 
-\newpage
 
-\subsection[short]{Funkcja główna}
+\subsection{Funkcja główna}
 \begin{lstlisting}[language=Rust, style=boxed, tabsize=2]
 fn main() {
 	// Macierz wypelniona zerami
@@ -274,6 +276,47 @@ i ukazuje wyniki na wykresie.
 
 \newpage
 
-\section[short]{Wyniki}
+\section{Wyniki}
+Po uruchomienu programu w konsoli powinny wyświetlić się przybliżone wartości macierzy (zaokrąglone do pierwszego miejsca po przecinku), oraz okno z wyznaczonym wykresem.
+
+\noindent Warto zaznaczyć, że zaokrąglenia mają jedynie na celu ułatwić czytanie, zatem nie 
+mają wpływu na przeprowadzane obliczenia.
+
+
+\vskip 1cm
+\begin{center}
+	\includegraphics[width=\textwidth]{matrix_ab.png}
+
+	\textbf{Rysunek 1.} Układ równań.
+\end{center}
+
+\vskip 1cm
+\begin{center}
+	\includegraphics[]{matrix_c.png}
+
+	\textbf{Rysunek 2.} Rozwiązanie układu równań (1).
+\end{center}
+
+\vskip 1cm
+\begin{center}
+	\includegraphics[width=\textwidth]{chart.png}
+
+	\textbf{Rysunek 3.} Wykres wyliczonej funkcji.
+\end{center}
+
+\newpage
+\section{Wnioski}
+Po przeanalizowaniu wykresu funkcji $u(x)$ możemy wyznaczyć jej wzór:
+\begin{equation}
+	u(x) = -20x + 40
+\end{equation}
+
+\subsection{Dowód}
+Dla pewności, możemy podstawić wyznaczoną funkcję pod otrzymane równości i udowodnić jej poprawność.
+
+\noindent Ze wzoru (1) wiemy, że funkcja $u$ jest ciągła (bądź nie zależy w ogóle od $x$), 
+ponieważ jej druga pochodna $u''(x)$ jest równa zeru.
+
+\noindent Ponadto, funkcja $u(x)=-20x+40$ spełnia warunek Dirichleta (2) i warunek Cauchy'ego (3).
 
 \end{document}
